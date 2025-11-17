@@ -1,5 +1,6 @@
 {
-	"TOKEN": "Put your bot's token here- also NEVER share this!",
-	"RESPOND_ON_MEMBER_VOICE_STATE": false,
-	"JOIN_AUTOMATICALLY": false
+  "TOKEN": "YOUR_BOT_TOKEN_HERE",
+  "CLIENT_ID": "YOUR_BOT_APPLICATION_ID",
+  "JOIN_AUTOMATICALLY": false,
+  "RESPOND_ON_MEMBER_VOICE_STATE": true
 }
