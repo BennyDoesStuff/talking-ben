@@ -84,6 +84,17 @@ async function runBen(voiceChannel) {
     }
 }
 
+function stopBen(guild) {
+    const connection = voice.getVoiceConnection(guild.id);
+
+    if (connection) {
+        connection.destroy();  // completely disconnects
+        return true;
+    }
+
+    return false;
+}
+
 client.on("voiceStateUpdate", (oldState, newState) => {
     if (newState.member.user.bot) return;
 
@@ -109,7 +120,11 @@ async function registerSlashCommands() {
     const commands = [
         new SlashCommandBuilder()
             .setName("startben")
-            .setDescription("Summons Talking Ben into your voice channel.")
+            .setDescription("Summons Talking Ben into your voice channel."),
+    
+        new SlashCommandBuilder()
+            .setName("stopben")
+            .setDescription("Stops Talking Ben and makes him leave the voice channel.")
     ];
 
     const rest = new REST({ version: "10" }).setToken(config.TOKEN);
@@ -133,5 +148,15 @@ client.on("interactionCreate", async (interaction) => {
 
         runBen(voiceChannel);
         return interaction.reply("☎️ **Ben is joining...**");
+    }
+
+    if (interaction.commandName === "stopben") {
+        const success = stopBen(interaction.guild);
+
+        if (!success) {
+            return interaction.reply({ content: "Ben is not in a voice channel.", ephemeral: true });
+        }
+
+        return interaction.reply("🚪 **Ben has left the voice channel.**");
     }
 });
