@@ -35,7 +35,7 @@ client.login(config.TOKEN);
 async function runBen(voiceChannel) {
     if (!voiceChannel) return;
 
-    // Prevent joining multiple channels
+    // Prevent joining multiple voice channels
     if (voiceChannel.guild.members.me.voice.channel) return;
 
     const connection = voice.joinVoiceChannel({
@@ -53,55 +53,32 @@ async function runBen(voiceChannel) {
 
     connection.subscribe(player);
 
-    // Helper: play a random sound at controlled volume
-    const playRandomSound = () => {
-        const soundPath = sounds[getRandomInt(0, sounds.length)];
-
-        const resource = voice.createAudioResource(fs.createReadStream(soundPath), {
-            inputType: voice.StreamType.Arbitrary,
-            inlineVolume: true
-        });
-
-        resource.volume.setVolume(0.7); // 70% volume
-
-        player.play(resource);
-    };
-
-    // Continuous loop mode
-    if (!config.RESPOND_ON_MEMBER_VOICE_STATE) {
-        playRandomSound();
-
-        player.on("stateChange", (oldState, newState) => {
-            if (newState.status === voice.AudioPlayerStatus.Idle) {
-                setTimeout(playRandomSound, getRandomInt(1, 4) * 1000);
-            }
-        });
-    }
-
-    // Respond-to-speech mode
-    else {
+    // Respond to user talking
+    if (config.RESPOND_ON_MEMBER_VOICE_STATE) {
         const speakingMap = connection.receiver.speaking;
-        const currentlyTalking = new Set();
 
-        const tryPlay = () => {
-            if (currentlyTalking.size === 0 && player.state.status === voice.AudioPlayerStatus.Idle) {
-                playRandomSound();
-            }
+        speakingMap.on("start", () => {
+            player.stop(true);
+        });
+
+        speakingMap.on("end", () => {
+            player.play(
+                voice.createAudioResource(sounds[getRandomInt(0, sounds.length)])
+            );
+        });
+    } else {
+        // Continuous loop playback
+        const playRandom = () => {
+            player.play(
+                voice.createAudioResource(sounds[getRandomInt(0, sounds.length)])
+            );
         };
 
-        speakingMap.on("start", (userId) => {
-            currentlyTalking.add(userId);
-        });
+        playRandom();
 
-        speakingMap.on("end", (userId) => {
-            currentlyTalking.delete(userId);
-            tryPlay(); // Only plays if everyone stopped talking
-        });
-
-        // When Ben finishes a sound, try to play another
         player.on("stateChange", (oldState, newState) => {
             if (newState.status === voice.AudioPlayerStatus.Idle) {
-                tryPlay();
+                setTimeout(playRandom, getRandomInt(1, 4) * 1000);
             }
         });
     }
