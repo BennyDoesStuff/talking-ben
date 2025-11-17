@@ -1,21 +1,19 @@
 {
   "name": "talking-ben",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "Talking Ben Discord bot updated for discord.js v14",
   "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "echo \"No tests configured\" && exit 0"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/voice": "^0.8.0",
-    "discord.js": "^13.6.0",
-    "dotenv": "^16.0.0",
-    "ffmpeg-static": "^4.4.1",
-    "sodium": "^3.0.2"
+    "@discordjs/voice": "^0.16.1",
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "ffmpeg-static": "^5.2.0",
+    "libsodium-wrappers": "^0.7.13"
   }
 }
